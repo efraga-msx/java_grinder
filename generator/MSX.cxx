@@ -47,7 +47,7 @@ int MSX::open(const char *filename)
   fprintf(out, "ram_start equ 0xc000\n");
   fprintf(out, "heap_ptr equ ram_start\n");
   fprintf(out, "save_iy equ heap_ptr\n");
-  
+
   //fprintf(out, "  _sound_waveform_start equ 0\n");
   //fprintf(out, "  _sound_waveform_end equ 2\n");
   //fprintf(out, "  _sound_waveform_ptr equ 4\n");
@@ -59,13 +59,13 @@ int MSX::start_init()
 {
   fprintf(out, "\n");
   fprintf(out, ".org 0x4000\n");
-  
-  fprintf(out, "db\t\"AB\"\t; ROM cartridge\n");
-  fprintf(out, "dw\tAPP_START\t; start address\n");
-  fprintf(out, "dw\t0x0\t\t; statement\n");
-  fprintf(out, "dw\t0x0\t\t; device\n");
-  fprintf(out, "dw\t0x0\t\t; text\n");
-  fprintf(out, "ds\t6\t\t; reserved 6 x 0h\n");
+
+  fprintf(out, "  db\t\"AB\"\t; ROM cartridge\n");
+  fprintf(out, "  dw\tAPP_START\t; start address\n");
+  fprintf(out, "  dw\t0x0\t\t; statement\n");
+  fprintf(out, "  dw\t0x0\t\t; device\n");
+  fprintf(out, "  dw\t0x0\t\t; text\n");
+  fprintf(out, "  ds\t6\t\t; reserved 6 x 0h\n");
 
   fprintf(out, "APP_START:\n");
   return 0;
@@ -76,59 +76,59 @@ int MSX::start_init()
  */
 int MSX::msx_beep()
 {
-  fprintf(out,"call BEEP\n");
+  fprintf(out,"  call BEEP\n");
   return 0;
 }
 
 int MSX::msx_color_BBB(uint8_t foreground, uint8_t background, uint8_t border)
 {
-    foreground = foreground & 15;
-    fprintf(out, "ld a,0x%20x\n", foreground);
-    fprintf(out, "ld (FORCLR),a\n");
-  
-    background = background & 15;
-    fprintf(out,"ld a,0x%20x\n", background);
-    fprintf(out,"ld (BAKCLR),a\n");
-  
-    border = border & 15;
-    fprintf(out,"ld a,0x%20x\n", border);
-	fprintf(out,"ld (BDRCLR),a\n");
-  
-	fprintf(out,"call CHGCLR\n");
-	return 0;
+  foreground = foreground & 15;
+  fprintf(out, "  ld a,0x%20x\n", foreground);
+  fprintf(out, "  ld (FORCLR),a\n");
+
+  background = background & 15;
+  fprintf(out,"  ld a,0x%20x\n", background);
+  fprintf(out,"  ld (BAKCLR),a\n");
+
+  border = border & 15;
+  fprintf(out,"  ld a,0x%20x\n", border);
+  fprintf(out,"  ld (BDRCLR),a\n");
+
+  fprintf(out,"  call CHGCLR\n");
+  return 0;
 }
 
 int MSX::msx_screen_B(uint8_t mode)
 {
-	mode = mode & 3;
-	fprintf(out,"ld a,0x%02x\n", mode);
+  mode = mode & 3;
+  fprintf(out,"  ld a,0x%02x\n", mode);
 
-	fprintf(out,"call CHGMOD\n");
-	// adjust text modes to maximun width
-	if ( mode < 2 )
-	{
-		if ( mode==0 ) { fprintf(out,"ld a,40\n"); }
-		else { fprintf(out,"ld a,32\n"); }
-		fprintf(out,"ld (LINLEN),a\n");
-	}
-	return 0;
+  fprintf(out,"  call CHGMOD\n");
+  // adjust text modes to maximun width
+  if ( mode < 2 )
+  {
+    if ( mode==0 ) { fprintf(out,"  ld a,40\n"); }
+    else { fprintf(out,"  ld a,32\n"); }
+    fprintf(out,"  ld (LINLEN),a\n");
+  }
+  return 0;
 }
 
 int MSX::msx_cls()
 {
-  fprintf(out,"call CLS\n");
+  fprintf(out,"  call CLS\n");
   return 0;
 }
 
 int MSX::msx_keyOn()
 {
-  fprintf(out,"call DSPFNK\n");
+  fprintf(out,"  call DSPFNK\n");
   return 0;
 }
 
 int MSX::msx_keyOff()
 {
-  fprintf(out,"call ERAFNK\n");
+  fprintf(out,"  call ERAFNK\n");
   return 0;
 }
 
@@ -141,11 +141,11 @@ int MSX::msx_copyVRAM_III(int len, int source, int dest)
   len = len & 65535;
   source = source & 65535;
   dest = dest & 65535;
-  fprintf(out,"ld bc,0x%02x\n",len);
-  fprintf(out,"ld de,0x%02x\n",dest);
-  fprintf(out,"ld hl,0x%02x\n",source);
-  fprintf(out,"call FILVRM\n");
-  fprintf(out,"call LDIRVV");
+  fprintf(out,"  ld bc,0x%02x\n",len);
+  fprintf(out,"  ld de,0x%02x\n",dest);
+  fprintf(out,"  ld hl,0x%02x\n",source);
+  fprintf(out,"  call FILVRM\n");
+  fprintf(out,"  call LDIRVV");
   return 0;
 }
 
@@ -154,10 +154,10 @@ int MSX::msx_fillVRAM_III(int c, int len, int addr)
   c = c & 255;
   len = len & 65535;
   addr = addr & 65535;
-  fprintf(out,"ld a,0x%02x\n",c);
-  fprintf(out,"ld bc,0x%02x\n",len);
-  fprintf(out,"ld hl,0x%02x\n",addr);
-  fprintf(out,"call FILVRM\n");
+  fprintf(out,"  ld a,0x%02x\n",c);
+  fprintf(out,"  ld bc,0x%02x\n",len);
+  fprintf(out,"  ld hl,0x%02x\n",addr);
+  fprintf(out,"  call FILVRM\n");
   return 0;
 }
 
@@ -166,22 +166,24 @@ int MSX::msx_fillVRAM_III(int c, int len, int addr)
  */
 int MSX::msx_setCursor_BB()
 {
-    fprintf(out,"\tpop de\n");
-    fprintf(out,"\tld a, e\n");
-    fprintf(out,"\tld (CSRY),a\n");
+  fprintf(out,"  ; msx_setCursor_BB\n");
+  fprintf(out,"  pop de\n");
+  fprintf(out,"  ld a, e\n");
+  fprintf(out,"  ld (CSRY),a\n");
 
-    fprintf(out,"\tpop de\n");
-    fprintf(out,"\tld a, e\n");
-    fprintf(out,"\tld (CSRX),a\n");
+  fprintf(out,"  pop de\n");
+  fprintf(out,"  ld a, e\n");
+  fprintf(out,"  ld (CSRX),a\n");
   return 0;
 }
 
 
 int MSX::msx_putChar_C()
 {
-  fprintf(out,"\tpop de\n");
-  fprintf(out,"\tld a, e\n");
-  fprintf(out, "\tcall CHPUT\n");
+  fprintf(out,"  ; msx_putChar_C\n");
+  fprintf(out,"  pop de\n");
+  fprintf(out,"  ld a, e\n");
+  fprintf(out,"  call CHPUT\n");
   return 0;
 }
 
@@ -191,13 +193,13 @@ int MSX::msx_putChar_C()
  */
 void MSX::insert_ldirvv(void)
 {
-  fprintf(out,"LDIRVV:\n");
-  fprintf(out,"call RDVRM\n");
-  fprintf(out,"ex de,hl\n");
-  fprintf(out,"call WRTVRM\n");
-  fprintf(out,"ex de,hl\n");
-  fprintf(out,"inc de\n");
-  fprintf(out,"cpi\n");
-  fprintf(out,"jp PE,LDIRVV\n");
-  fprintf(out,"ret\n");
+  fprintf(out,"  LDIRVV:\n");
+  fprintf(out,"  call RDVRM\n");
+  fprintf(out,"  ex de,hl\n");
+  fprintf(out,"  call WRTVRM\n");
+  fprintf(out,"  ex de,hl\n");
+  fprintf(out,"  inc de\n");
+  fprintf(out,"  cpi\n");
+  fprintf(out,"  jp PE,LDIRVV\n");
+  fprintf(out,"  ret\n");
 }

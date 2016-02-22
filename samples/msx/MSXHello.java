@@ -21,8 +21,6 @@ public class MSXHello {
 
 	public static void main(String args[]) {
 		char c;
-		
-		MSX.cls();
 
 		for (int i = 0; i < strMsg.length(); i++) {
 			c = strMsg.charAt(i);
