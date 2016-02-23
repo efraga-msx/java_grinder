@@ -22,18 +22,23 @@ import net.mikekohn.java_grinder.MSX;
  */
 public class MSXTestSetCursor {
 
+	private final static byte MAX_COL = 40;
+	private final static byte MAX_LIN = 24;
+	private final static byte SCREEN_MODE = 0;
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		byte mode = 0;
+		byte mode = SCREEN_MODE;
 		byte lin = 2;
 		byte col = 2;
 		char c = '0';
 		
 		MSX.screen(mode);
+		MSX.width((byte)MAX_COL);
 
-		for (int i = 1; i < 41; i++) 
+		for (int i = 1; i <= MAX_COL; i++) 
 		{
 			MSX.setCursor((byte)i, lin);
 			MSX.putChar(c++);
@@ -43,14 +48,14 @@ public class MSXTestSetCursor {
 
 		lin = 1;
 		c = '0';
-		for (int i = 1; i < 41; i+=10) 
+		for (int i = 1; i <= MAX_COL; i+=10) 
 		{
 			MSX.setCursor((byte)i, lin);
 			MSX.putChar(c++);
 		}
 
 		c = '0';
-		for (int i = 1; i < 25; i++) 
+		for (int i = 1; i <= MAX_LIN; i++) 
 		{
 			MSX.setCursor(col, (byte)i);
 			MSX.putChar(c++);
@@ -60,7 +65,7 @@ public class MSXTestSetCursor {
 
 		col = 1;
 		c = '0';
-		for (int i = 1; i < 25; i+=10) 
+		for (int i = 1; i <= MAX_LIN; i+=10) 
 		{
 			MSX.setCursor(col, (byte)i);
 			MSX.putChar(c++);
@@ -76,7 +81,7 @@ public class MSXTestSetCursor {
 
 		c = 'Y';
 		
-		for (int i = 21; i < 41; i++) 
+		for (int i = 21; i <= MAX_COL; i++) 
 		{
 			MSX.setCursor((byte)i, lin--);
 			MSX.putChar(c);
