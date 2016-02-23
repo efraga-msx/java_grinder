@@ -112,15 +112,13 @@ int MSX::msx_screen_B()
 
   // change screen mode
   fprintf(out,"  pop de\n");
-  fprintf(out,"  push de\n");
 
   fprintf(out,"  ld a, e\n");
 
   fprintf(out,"  call CHGMOD\n");
 
   // adjust text modes to maximum width
-  fprintf(out,"  pop de\n");
-  fprintf(out,"  ld a, e\n");
+  fprintf(out,"  ld a, (SCRMOD)\n");
 
   fprintf(out,"  and a\n");
   fprintf(out,"  cp 1\n");
@@ -230,6 +228,25 @@ int MSX::msx_putChar_C()
   fprintf(out,"  pop de\n");
   fprintf(out,"  ld a, e\n");
   fprintf(out, "  call CHPUT\n");
+  return 0;
+}
+
+
+int MSX::msx_putChar_C(char c)
+{
+  fprintf(out,"  ;; putChar_C (const)\n");
+  fprintf(out,"  ld a, 0x%02x\n", c);
+  fprintf(out, "  call CHPUT\n");
+  return 0;
+}
+
+
+int MSX::msx_putS_IaC()
+{
+  fprintf(out,"  ;; putS_IaC\n");
+//  fprintf(out,"  pop de\n");
+//  fprintf(out,"  ld a, e\n");
+//  fprintf(out, "  call CHPUT\n");
   return 0;
 }
 

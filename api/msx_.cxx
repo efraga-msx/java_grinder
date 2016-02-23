@@ -57,6 +57,7 @@ int msx(JavaClass *java_class, Generator *generator, char *method_name)
   CHECK_FUNC(fillVRAM,_III)
   CHECK_FUNC(copyVRAM,_III)
   CHECK_FUNC(putChar,_C)
+  CHECK_FUNC(putS,_IaC)
   CHECK_FUNC(setCursor,_BB)
 
   return -1;
@@ -75,6 +76,7 @@ int msx(JavaClass *java_class, Generator *generator, char *method_name, char con
 int msx(JavaClass *java_class, Generator *generator, char *method_name, int const_val)
 {
   //CHECK_FUNC_CONST(someFunction,_I)
+  CHECK_FUNC_CONST(putChar,_C)
 
   return -1;
 }

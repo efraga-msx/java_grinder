@@ -29,6 +29,8 @@ public class MSXHello {
 			MSX.putChar(c);
 		}
 
+		MSX.putChar('A');
+
 		while (true);
 	}
 }

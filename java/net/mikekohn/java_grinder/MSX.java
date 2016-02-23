@@ -30,5 +30,6 @@ abstract public class MSX
   public static void fillVRAM(int c, int len, int addr) { }
   public static void copyVRAM(int len, int source, int dest) { }
   public static void putChar(char c) { }
+  public static void putS(int i, char[] s) { }
   public static void setCursor(byte column, byte line) { }
 }

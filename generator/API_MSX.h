@@ -31,6 +31,8 @@ public:
   virtual int msx_fillVRAM_III() { return -1; }
   virtual int msx_copyVRAM_III() { return -1; }
   virtual int msx_putChar_C() { return -1; }
+  virtual int msx_putChar_C(char c) { return -1; }
+  virtual int msx_putS_IaC() { return -1; }
   virtual int msx_setCursor_BB() { return -1; }
 };
 

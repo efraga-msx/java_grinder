@@ -41,6 +41,8 @@ public:
   //virtual int msx_copyVRAM_III(int len, int source, int dest);
   virtual int msx_copyVRAM_III();
   virtual int msx_putChar_C();
+  virtual int msx_putChar_C(char c);
+  virtual int msx_putS_IaC();
   virtual int msx_setCursor_BB();
 
 private:
