@@ -75,6 +75,12 @@
       ret = b(java_class, generator, function, const_vals[0], const_vals[1]); \
     }
 
+#define CHECK_CONST_3(a,b) \
+    if (strcmp(cls, #a) == 0) \
+    { \
+      ret = b(java_class, generator, function, const_vals[0], const_vals[1], const_vals[2]); \
+    }
+
 static void remove_illegal_chars(char *function)
 {
   while(*function != 0)
@@ -244,6 +250,13 @@ int invoke_static(JavaClass *java_class, int method_id, Generator *generator, in
     CHECK_CONST_2(TI99, ti99)
     CHECK_CONST_2(SegaGenesis, sega_genesis)
     CHECK_CONST_2(SNES, snes)
+      else
+    {}
+  }
+    else
+  if (const_count == 3)
+  {
+    CHECK_CONST_3(MSX, msx)
       else
     {}
   }
