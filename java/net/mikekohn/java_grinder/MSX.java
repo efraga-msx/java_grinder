@@ -11,6 +11,7 @@
 
 /*
  *   MSX support by Giovanni Nunes - https://github.com/plainspooky
+ *                  Emiliano Fraga - https://github.com/efraga-msx
  */
 
 package net.mikekohn.java_grinder;

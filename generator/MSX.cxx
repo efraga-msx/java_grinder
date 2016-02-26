@@ -80,42 +80,77 @@ int MSX::msx_beep()
   return 0;
 }
 
-//int MSX::msx_color_BBB(uint8_t foreground, uint8_t background, uint8_t border)
 int MSX::msx_color_BBB()
 {
-#if 0
-    foreground = foreground & 15;
-    fprintf(out, "  ld a,0x%20x\n", foreground);
-    fprintf(out, "  ld (FORCLR),a\n");
+  fprintf(out,"  ;; color_BBB\n");
 
-    background = background & 15;
-    fprintf(out,"  ld a,0x%20x\n", background);
-    fprintf(out,"  ld (BAKCLR),a\n");
+  fprintf(out,"  pop de\n");
+  fprintf(out,"  ld a, e\n");
+  fprintf(out,"  ld (BDRCLR),a\n");
 
-    border = border & 15;
-    fprintf(out,"  ld a,0x%20x\n", border);
-#endif
-    fprintf(out,"  ld (BDRCLR),a\n");
+  fprintf(out,"  pop de\n");
+  fprintf(out,"  ld a, e\n");
+  fprintf(out,"  ld (BAKCLR),a\n");
 
-    fprintf(out,"  call CHGCLR\n");
-    return 0;
+  fprintf(out,"  pop de\n");
+  fprintf(out,"  ld a, e\n");
+  fprintf(out, "  ld (FORCLR),a\n");
+
+  fprintf(out,"  call CHGCLR\n");
+  return 0;
 }
 
-//int MSX::msx_screen_B(uint8_t mode)
+int MSX::msx_color_BBB(uint8_t foreground, uint8_t background, uint8_t border)
+{
+  fprintf(out,"  ;; color_BBB (const)\n");
+
+  fprintf(out,"  ld a, 0x%02x\n", border);
+  fprintf(out,"  ld (BDRCLR),a\n");
+
+  fprintf(out,"  ld a, 0x%02x\n", background);
+  fprintf(out,"  ld (BAKCLR),a\n");
+
+  fprintf(out,"  ld a, 0x%02x\n", foreground);
+  fprintf(out, "  ld (FORCLR),a\n");
+
+  fprintf(out,"  call CHGCLR\n");
+  return 0;
+}
+
 int MSX::msx_screen_B()
 {
-  int lbl_sc1 = label_count++;
-  int lbl_width = label_count++;
-  int lbl_end = label_count++;
-
   fprintf(out,"  ;; screen_B()\n");
 
   // change screen mode
   fprintf(out,"  pop de\n");
-
   fprintf(out,"  ld a, e\n");
 
   fprintf(out,"  call CHGMOD\n");
+
+  insertMaxWidth();
+
+  return 0;
+}
+
+int MSX::msx_screen_B(uint8_t mode)
+{
+  fprintf(out,"  ;; screen_B (const)\n");
+
+  // change screen mode
+  fprintf(out,"  ld a, 0x%02x\n", mode);
+
+  fprintf(out,"  call CHGMOD\n");
+
+  insertMaxWidth();
+
+  return 0;
+}
+
+void MSX::insertMaxWidth(void)
+{
+  int lbl_sc1 = label_count++;
+  int lbl_width = label_count++;
+  int lbl_end = label_count++;
 
   // adjust text modes to maximum width
   fprintf(out,"  ld a, (SCRMOD)\n");
@@ -137,17 +172,26 @@ int MSX::msx_screen_B()
   fprintf(out,"  ld (LINLEN), a\n");
 
   fprintf(out, "label_%d:\n", lbl_end);
-
-  return 0;
 }
 
 int MSX::msx_width_B()
 {
   fprintf(out,"  ;; width_B()\n");
 
-  // adjust text modes to maximum width
+  // adjust text modes
   fprintf(out,"  pop de\n");
   fprintf(out,"  ld a, e\n");
+  fprintf(out,"  ld (LINLEN), a\n");
+
+  return 0;
+}
+
+int MSX::msx_width_B(uint8_t w)
+{
+  fprintf(out,"  ;; width_B (const)\n");
+
+  // adjust text modes
+  fprintf(out,"  ld a, 0x%02x\n", w);
   fprintf(out,"  ld (LINLEN), a\n");
 
   return 0;
@@ -211,12 +255,27 @@ int MSX::msx_fillVRAM_III()
  */
 int MSX::msx_setCursor_BB()
 {
+  fprintf(out,"  ;; setCursor_BB\n");
   fprintf(out,"  pop de\n");
   fprintf(out,"  ld a, e\n");
   fprintf(out,"  ld (CSRY),a\n");
 
   fprintf(out,"  pop de\n");
   fprintf(out,"  ld a, e\n");
+  fprintf(out,"  ld (CSRX),a\n");
+  return 0;
+}
+
+/*
+ *  Text console
+ */
+int MSX::msx_setCursor_BB(uint8_t col, uint8_t lin)
+{
+  fprintf(out,"  ;; setCursor_BB (const)\n");
+  fprintf(out,"  ld a, 0x%02x\n", lin);
+  fprintf(out,"  ld (CSRY),a\n");
+
+  fprintf(out,"  ld a, 0x%02x\n", col);
   fprintf(out,"  ld (CSRX),a\n");
   return 0;
 }

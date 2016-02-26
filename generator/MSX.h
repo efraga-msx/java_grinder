@@ -29,11 +29,12 @@ public:
   virtual int start_init();
   virtual int msx_cls();
   virtual int msx_beep();
-  //virtual int msx_color_BBB(uint8_t foreground, uint8_t background, uint8_t border);
   virtual int msx_color_BBB();
-  //virtual int msx_screen_B(uint8_t mode);
+  virtual int msx_color_BBB(uint8_t foreground, uint8_t background, uint8_t border);
   virtual int msx_screen_B();
+  virtual int msx_screen_B(uint8_t mode);
   virtual int msx_width_B();
+  virtual int msx_width_B(uint8_t w);
   virtual int msx_keyOn();
   virtual int msx_keyOff();
   //virtual int msx_fillVRAM_III(int c, int len, int addr);
@@ -44,9 +45,11 @@ public:
   virtual int msx_putChar_C(char c);
   virtual int msx_putS_IaC();
   virtual int msx_setCursor_BB();
+  virtual int msx_setCursor_BB(uint8_t col, uint8_t lin);
 
 private:
   void insert_ldirvv(void);
+  void insertMaxWidth(void);
 
   //uint32_t need_plot_lores : 1;
   bool need_ldirvv:1;

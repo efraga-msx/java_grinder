@@ -30,49 +30,48 @@ public class MSXTestSetCursor {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		byte mode = SCREEN_MODE;
-		byte lin = 2;
-		byte col = 2;
 		char c = '0';
 		
-		MSX.screen(mode);
+		MSX.screen(SCREEN_MODE);
 		MSX.width((byte)MAX_COL);
+		MSX.color((byte) 15, (byte) 5, (byte) 5);
+		MSX.setCursor(MAX_COL, MAX_LIN);
+		MSX.putChar('*');
 
 		for (int i = 1; i <= MAX_COL; i++) 
 		{
-			MSX.setCursor((byte)i, lin);
+			MSX.setCursor((byte)i, (byte)2);
 			MSX.putChar(c++);
 			
 			if (c > '9') {c = '0';} 
 		}
 
-		lin = 1;
 		c = '0';
 		for (int i = 1; i <= MAX_COL; i+=10) 
 		{
-			MSX.setCursor((byte)i, lin);
+			MSX.setCursor((byte)i, (byte)1);
 			MSX.putChar(c++);
 		}
 
 		c = '0';
 		for (int i = 1; i <= MAX_LIN; i++) 
 		{
-			MSX.setCursor(col, (byte)i);
+			MSX.setCursor((byte)2, (byte)i);
 			MSX.putChar(c++);
 			
 			if (c > '9') {c = '0';} 
 		}
 
-		col = 1;
 		c = '0';
 		for (int i = 1; i <= MAX_LIN; i+=10) 
 		{
-			MSX.setCursor(col, (byte)i);
+			MSX.setCursor((byte)1, (byte)i);
 			MSX.putChar(c++);
 		}
 		
 		c = 'X';
-		lin = 3;
+		
+		byte lin = 3;
 		for (int i = 1; i < 21; i++) 
 		{
 			MSX.setCursor((byte)i, lin++);
