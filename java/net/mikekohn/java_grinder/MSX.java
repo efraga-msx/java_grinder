@@ -33,4 +33,5 @@ abstract public class MSX
   public static void putChar(char c) { }
   public static void putS(int i, char[] s) { }
   public static void setCursor(byte column, byte line) { }
+  public static int getChar() {return 0;}
 }

@@ -65,6 +65,7 @@ int msx(JavaClass *java_class, Generator *generator, char *method_name)
   CHECK_FUNC(putChar,_C)
   CHECK_FUNC(putS,_IaC)
   CHECK_FUNC(setCursor,_BB)
+  CHECK_FUNC(getChar,)
 
   return -1;
 }

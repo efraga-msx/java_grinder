@@ -47,12 +47,18 @@ public:
   virtual int msx_setCursor_BB();
   virtual int msx_setCursor_BB(uint8_t col, uint8_t lin);
 
+  virtual int getLabelCount(void);
+  virtual int incLabelCount(void);
+
+  virtual int msx_getChar();
+
 private:
   void insert_ldirvv(void);
   void insertMaxWidth(void);
 
   //uint32_t need_plot_lores : 1;
   bool need_ldirvv:1;
+
 };
 
 #endif

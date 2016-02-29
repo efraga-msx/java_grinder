@@ -38,6 +38,7 @@ public:
   virtual int msx_putS_IaC() { return -1; }
   virtual int msx_setCursor_BB() { return -1; }
   virtual int msx_setCursor_BB(uint8_t col, uint8_t lin) { return -1; }
+  virtual int msx_getChar() { return -1; }
 };
 
 #endif

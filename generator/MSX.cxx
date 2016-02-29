@@ -38,6 +38,8 @@ MSX::~MSX()
 {
   if (need_ldirvv) { insert_ldirvv(); }
   //if (need_plot_lores) { add_plot_lores(); }
+
+  fprintf(out, "\nAPP_END:\n");
 }
 
 int MSX::open(const char *filename)
@@ -148,9 +150,9 @@ int MSX::msx_screen_B(uint8_t mode)
 
 void MSX::insertMaxWidth(void)
 {
-  int lbl_sc1 = label_count++;
-  int lbl_width = label_count++;
-  int lbl_end = label_count++;
+  int lbl_sc1 = incLabelCount();
+  int lbl_width = incLabelCount();
+  int lbl_end = incLabelCount();
 
   // adjust text modes to maximum width
   fprintf(out,"  ld a, (SCRMOD)\n");
@@ -324,4 +326,26 @@ void MSX::insert_ldirvv(void)
   fprintf(out,"  cpi\n");
   fprintf(out,"  jp PE,LDIRVV\n");
   fprintf(out,"  ret\n");
+}
+
+int MSX::getLabelCount(void)
+{
+  return label_count;
+}
+
+
+int MSX::incLabelCount(void)
+{
+  return label_count++;
+}
+
+
+int MSX::msx_getChar()
+{
+  fprintf(out,"  ;; getChar\n");
+  fprintf(out,"  call CHGET\n");
+  fprintf(out,"  ld l, a\n");
+  fprintf(out,"  ld h, 0\n");
+  fprintf(out,"  push hl\n");
+  return 0;
 }
