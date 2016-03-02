@@ -32,14 +32,27 @@ MSX::MSX() :
   //start_org = 0x4000;
   //ram_start = 0xc000;
   //ram_end = 0xdfff;
+
+//  requirables[0] = new Requirable("msx_console.inc");
+//  requirables[1] = new Requirable("msx_screen2.inc");
 }
 
 MSX::~MSX()
 {
   if (need_ldirvv) { insert_ldirvv(); }
   //if (need_plot_lores) { add_plot_lores(); }
-
   fprintf(out, "\nAPP_END:\n");
+
+  for (int i = 0; i < _REQ_MSX_MAX; i++)
+  {
+    if (requirables[i]->isActive())
+    {
+      fprintf(out, ".include \"%s\"\n", requirables[i]->getStr());
+    }
+    delete requirables[i];
+  }
+
+  fprintf(out, "\nINCLUDE_END:\n");
 }
 
 int MSX::open(const char *filename)
@@ -342,10 +355,35 @@ int MSX::incLabelCount(void)
 
 int MSX::msx_getChar()
 {
+//  requirables[REQ_MSX_CONSOLE]->activate();
+
   fprintf(out,"  ;; getChar\n");
   fprintf(out,"  call CHGET\n");
   fprintf(out,"  ld l, a\n");
   fprintf(out,"  ld h, 0\n");
   fprintf(out,"  push hl\n");
   return 0;
+}
+
+// ------------ Requirable sub class ----
+
+Requirable::Requirable (const char* str) {
+    m_b = false;
+    m_str = str;
+}
+
+Requirable::~Requirable() {
+  printf("Requirable::~Requirable() : %s\n", m_str);
+}
+
+void Requirable::activate() {
+    m_b = true;
+}
+
+bool Requirable::isActive() {
+    return m_b;
+}
+
+const char* Requirable::getStr() {
+    return m_str;
 }

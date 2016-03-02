@@ -20,6 +20,27 @@
 
 #include "Z80.h"
 
+enum
+{
+//  REQ_MSX_CONSOLE = 0,
+//  REQ_MSX_SCREEN2
+};
+
+#define _REQ_MSX_MAX 0
+
+class Requirable
+{
+  public:
+    Requirable(const char* str);
+    ~Requirable();
+    void activate();
+    bool isActive();
+    const char* getStr();
+  private:
+    bool m_b;
+    const char* m_str;
+};
+
 class MSX : public Z80
 {
 public:
@@ -59,6 +80,7 @@ private:
   //uint32_t need_plot_lores : 1;
   bool need_ldirvv:1;
 
+  Requirable* requirables[_REQ_MSX_MAX];
 };
 
 #endif
