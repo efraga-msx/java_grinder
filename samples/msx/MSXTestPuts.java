@@ -21,8 +21,8 @@ public class MSXTestPuts {
 
 	public static void main(String args[]) {
 		short[] aC = new short [strMsg.length()];
-		byte scrMode = 0;
-		byte lin, col;
+		int scrMode = 0;
+		int lin, col;
 		
 		for (int i = 0; i < strMsg.length(); i++) {
 			aC[i] = (short) strMsg.charAt(i);

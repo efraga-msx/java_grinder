@@ -42,14 +42,12 @@ MSX::MSX() :
 
 MSX::~MSX()
 {
-  // add a infinite loop at the end of program
   fprintf(out,"\n"
-    "__JAVA_LOOP:\n"
-    "  jr __JAVA_LOOP\n"
-    "\n"
-    "; -- The program was ended.\n"
-    "\n"
-    "; -- Libraries will be appended at this point... --\n\n");
+  "; -- The program was ended.\n"
+  "\n"
+  "; -- Libraries will be appended at this point... --\n\n");
+
+  // insert_init_env();
 
   // the need_* will be here
   if (need_ldirvv) { insert_ldirvv(); }
@@ -64,11 +62,10 @@ MSX::~MSX()
     delete requirables[i];
   }
 
-  // padding to be a "good" ROM
   fprintf(out,"\n"
   "__JAVA_END:\n"
   "\n"
-  "; -- end of program! ^_^ --\n");
+  "; -- end of code! ^_^ --\n");
 }
 
 int MSX::open(const char *filename)
@@ -76,7 +73,7 @@ int MSX::open(const char *filename)
   if (Z80::open(filename) != 0) { return -1; }
 
   // include labels from BIOS calls and system variables
-  fprintf(out, ".include 'msx.inc'\n");
+  fprintf(out, ".include \"msx.inc\"\n");
 
   //
   // this must be checked! double checked!!
@@ -97,17 +94,52 @@ int MSX::start_init()
 
   // cartridge header
   fprintf(out,"\n"
-  "  .org 0x4000\n"              // My program start at 0x4000 (16384)
-  "  .db 'AB'\n"                 // 'AB' = ROM Cartridge ID
-  "  .dw __JAVA_EXEC\n"            // START ADDRESS
-  "  .dw 0x0000\n"               // STATMENT (not used)
-  "  .dw 0x0000\n"               // DEVICE (not used)
-  "  .dw 0x0000\n"               // TEXT (not used)
-  "  .ds8 6\n"                  // RESERVED (do not use)
+  "  .org 0x4000\n"                 // My program start at 0x4000 (16384)
+  "  .db \"AB\"\n"                  // 'AB' = ROM Cartridge ID
+  "  .dw __JAVA_EXEC\n"             // START ADDRESS
+  "  .dw 0x0000\n"                  // STATMENT (not used)
+  "  .dw 0x0000\n"                  // DEVICE (not used)
+  "  .dw 0x0000\n"                  // TEXT (not used)
+  "  .ds8 6\n"                      // RESERVED (do not use)
   "\n");
 
   // main label
-  fprintf(out,"__JAVA_EXEC:\n");
+  fprintf(out,"__JAVA_EXEC:\n"
+  "  call __JAVA_CODE\n\n");
+
+  // A pretty infinite loop to prevent return to unknow places
+  fprintf(out,"\n"
+  "__JAVA_LOOP:\n"
+  "  jr __JAVA_LOOP\n"
+  "\n"
+  "; -- end of main block! ^_^ --\n");
+
+  fprintf(out,"\n"
+  "__JAVA_CODE:\n");
+
+  // environment starts here
+  // fprintf(out,"call __JAVA_INIT_ENV\n");
+
+/*
+    0x2b    7 6 5 4 3 2 1 0
+            │ │ │ │ └─┴─┴─┴── Character set
+            │ │ │ │           0 = Japanese, 1 = International, 2=Korean
+            │ └─┴─┴────────── Date format
+            │                 0 = Y-M-D, 1 = M-D-Y, 2 = D-M-Y
+            └──────────────── Default interrupt frequency
+                              0 = 60Hz, 1 = 50Hz
+
+    0x2c   7 6 5 4 3 2 1 0
+            │ │ │ │ └─┴─┴─┴── Keyboard type
+            │ │ │ │           0 = Japanese, 1 = International
+            │ │ │ │           2 = French (AZERTY), 3 = UK, 4 = German (DIN)
+            └─┴─┴─┴────────── Basic version
+                              0 = Japanese, 1 = International
+
+    0x2d   0 = MSX1, 1 = MSX2, 2 = MSX2+, 3 = MSX turbo R ...
+
+    0x2e   1 = build in MSX-MIDI ^_^
+*/
 
   return 0;
 }
@@ -115,7 +147,7 @@ int MSX::start_init()
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- *  Basic console (text-mode) operation using MSX-BIOS calls
+ *  Console (text-mode) operation using MSX-BIOS calls
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 */
@@ -145,7 +177,7 @@ int MSX::msx_cls()
 }
 
 // set text cursor position -- method for variables
-int MSX::msx_setCursor_BB()
+int MSX::msx_setCursor_II()
 {
   __VERBOSE
 
@@ -154,11 +186,23 @@ int MSX::msx_setCursor_BB()
   __POP_A_DE                        // get 'col'
   fprintf(out,"  ld (CSRX), a\n");
 
+/*
+    changing CSRY and CSRX the cursor position is made in a indirect way,
+    use POSIT will be more correctly:
+
+    __POP_A_DE  // A=column
+    pop de      // E=line
+    push hl
+    ld l, e      // L = line
+    ld h, a      // H = column
+    call POSIT
+    pop hl
+*/
   return 0;
 }
 
 // ser text cursor position -- method for constants
-int MSX::msx_setCursor_BB(uint8_t col, uint8_t lin)
+int MSX::msx_setCursor_II(int col, int lin)
 {
   __VERBOSE
 
@@ -195,7 +239,7 @@ int MSX::msx_keyOff()
 }
 
 // set screen width -- method for variables
-int MSX::msx_width_B()
+int MSX::msx_width_I()
 {
   __VERBOSE
 
@@ -206,7 +250,7 @@ int MSX::msx_width_B()
 }
 
 // set screen width -- method for constants
-int MSX::msx_width_B(uint8_t w)
+int MSX::msx_width_I(int w)
 {
   __VERBOSE
 
@@ -271,7 +315,7 @@ int MSX::msx_putS_IaC()
 */
 
 // change foreground color -- method for variables
-int MSX::msx_foreColor_B()
+int MSX::msx_foreColor_I()
 {
   // requirables[REQ_MSX_CHANGE_COLORS]->activate();
   need_change_colors = true;
@@ -286,7 +330,7 @@ int MSX::msx_foreColor_B()
 }
 
 // change foreground color -- method for constants
-int MSX::msx_foreColor_B(uint8_t color)
+int MSX::msx_foreColor_I(int color)
 {
   need_change_colors = true;
   __VERBOSE
@@ -301,7 +345,7 @@ int MSX::msx_foreColor_B(uint8_t color)
 }
 
 // change background color -- method for variables
-int MSX::msx_backColor_B()
+int MSX::msx_backColor_I()
 {
   need_change_colors = true;
   __VERBOSE
@@ -315,7 +359,7 @@ int MSX::msx_backColor_B()
 }
 
 // change background color -- method for constants
-int MSX::msx_backColor_B(uint8_t color)
+int MSX::msx_backColor_I(int color)
 {
   need_change_colors = true;
   __VERBOSE
@@ -330,7 +374,7 @@ int MSX::msx_backColor_B(uint8_t color)
 }
 
 // change border color -- method for variables
-int MSX::msx_borderColor_B()
+int MSX::msx_borderColor_I()
 {
   need_change_colors = true;
   __VERBOSE
@@ -344,7 +388,7 @@ int MSX::msx_borderColor_B()
 }
 
 // change background color -- method for constants
-int MSX::msx_borderColor_B(uint8_t color)
+int MSX::msx_borderColor_I(int color)
 {
   need_change_colors = true;
   __VERBOSE
@@ -359,7 +403,7 @@ int MSX::msx_borderColor_B(uint8_t color)
 }
 
 // change foreground, background and border colors -- method for variables
-int MSX::msx_color_BBB()
+int MSX::msx_color_III()
 {
   need_change_colors = true;
   __VERBOSE
@@ -379,7 +423,7 @@ int MSX::msx_color_BBB()
 }
 
 // change foreground, background and border colors -- method for constants
-int MSX::msx_color_BBB(uint8_t foreground, uint8_t background, uint8_t border)
+int MSX::msx_color_III(int foreground, int background, int border)
 {
   need_change_colors = true;
   __VERBOSE
@@ -400,7 +444,7 @@ int MSX::msx_color_BBB(uint8_t foreground, uint8_t background, uint8_t border)
 }
 
 // set screen mode -- method for variables
-int MSX::msx_screen_B()
+int MSX::msx_screen_I()
 {
   __VERBOSE
 
@@ -413,7 +457,7 @@ int MSX::msx_screen_B()
 }
 
 // set screen mode -- method for constants
-int MSX::msx_screen_B(uint8_t mode)
+int MSX::msx_screen_I(int mode)
 {
   __VERBOSE
 
@@ -427,7 +471,7 @@ int MSX::msx_screen_B(uint8_t mode)
 }
 
 // set a value of a VDP register -- method for variables
-int MSX::msx_writeVDP_BB()
+int MSX::msx_writeVDP_II()
 {
   __VERBOSE
 
@@ -446,7 +490,7 @@ int MSX::msx_writeVDP_BB()
 }
 
 // set a value of a VDP register -- method for constants
-int MSX::msx_writeVDP_BB(uint8_t reg, uint8_t value)
+int MSX::msx_writeVDP_II(int reg, int value)
 {
   __VERBOSE
 
@@ -467,15 +511,16 @@ int MSX::msx_writeVRAM_II()
 
   __POP_A_DE                        // get 'value'
   fprintf(out,"  pop de\n");        // get 'addr'
-  fprintf(out,"  push hl\n");
+  //fprintf(out,"  push hl\n");
   // exx af, af'
   // ld a, h
   // and 0x3f    // I don't know if WRTVRM checks VRAM address
   // ld h, a
   // exx af, af'
-  fprintf(out,"  ld hl, de\n");
+  fprintf(out,"  ld h, d\n");
+  fprintf(out,"  ld l, e\n");
   fprintf(out,"  call WRTVRM\n");
-  fprintf(out,"  pop hl\n");
+  // fprintf(out,"  pop hl\n");    -- forget HL
 
   return 0;
 }
@@ -505,7 +550,8 @@ int MSX::msx_readVRAM_I()
   // ld a,d
   // and 0x3f    // I don't know if WRTVRM checks VRAM address
   // ld d,a
-  fprintf(out,"  ld hl, de\n");
+  fprintf(out,"  ld h, d\n");
+  fprintf(out,"  ld l, e\n");
   fprintf(out,"  call RDVRM\n");
   __PUSH_HL_A
 
@@ -526,7 +572,7 @@ int MSX::msx_readVRAM_I(int addr)
 }
 
 // read a value of VDP register -- method for variables
-int MSX::msx_readVDP_B()
+int MSX::msx_readVDP_I()
 {
   __VERBOSE
 
@@ -539,7 +585,7 @@ int MSX::msx_readVDP_B()
 }
 
 // read a value of VDP register -- method for constants
-int MSX::msx_readVDP_B(uint8_t reg)
+int MSX::msx_readVDP_I(int reg)
 {
   __VERBOSE
 
@@ -617,7 +663,7 @@ int MSX::msx_copyVRAM_III(int source, int dest, int size)
 */
 
 // set a value of a PSG register -- method for variables
-int MSX::msx_writePSG_BB()
+int MSX::msx_writePSG_II()
 {
   __VERBOSE
 
@@ -634,7 +680,7 @@ int MSX::msx_writePSG_BB()
 }
 
 // set a value of a PSG register -- method for constants
-int MSX::msx_writePSG_BB(uint8_t reg, uint8_t value)
+int MSX::msx_writePSG_II(int reg, int value)
 {
   __VERBOSE
 
@@ -647,7 +693,7 @@ int MSX::msx_writePSG_BB(uint8_t reg, uint8_t value)
 }
 
 // get joystick position -- method for variables
-int MSX::msx_getStick_B()
+int MSX::msx_getStick_I()
 {
   __VERBOSE
 
@@ -661,11 +707,11 @@ int MSX::msx_getStick_B()
 }
 
 // get joystick position -- method for constants
-int MSX::msx_getStick_B(uint8_t joy)
+int MSX::msx_getStick_I(int joy)
 {
   __VERBOSE
 
-  fprintf(out,"ld a, 0x%02x\n",joy);
+  fprintf(out,"  ld a, 0x%02x\n",joy);
   __PUSH_BCDEHL
   fprintf(out,"  call GTSTCK");
   __POP_BCDEHL
@@ -675,7 +721,7 @@ int MSX::msx_getStick_B(uint8_t joy)
 }
 
 // get joystick buttoms status -- method for variables
-int MSX::msx_getTrig_B()
+int MSX::msx_getTrig_I()
 {
   __VERBOSE
 
@@ -689,11 +735,11 @@ int MSX::msx_getTrig_B()
 }
 
 // get joystick buttoms status -- method for constants
-int MSX::msx_getTrig_B(uint8_t joy)
+int MSX::msx_getTrig_I(int joy)
 {
   __VERBOSE
 
-  fprintf(out,"ld a, 0x%02x\n",joy);
+  fprintf(out,"  ld a, 0x%02x\n",joy);
   fprintf(out,"  push bc");
   fprintf(out,"  call GTTRIG");
   fprintf(out,"  pop bc");
@@ -705,6 +751,11 @@ int MSX::msx_getTrig_B(uint8_t joy)
 /*
  *  Support routines
  */
+/*void MSX::insert_init_env(void)
+{
+  return 0;
+}*/
+
 void MSX::insert_changecolors(void)
 {
   fprintf(out,"CHANGE_COLORS:\n"

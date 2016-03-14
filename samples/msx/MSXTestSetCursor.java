@@ -22,9 +22,9 @@ import net.mikekohn.java_grinder.MSX;
  */
 public class MSXTestSetCursor {
 
-	private final static byte MAX_COL = 40;
-	private final static byte MAX_LIN = 24;
-	private final static byte SCREEN_MODE = 0;
+	private final static int MAX_COL = 40;
+	private final static int MAX_LIN = 24;
+	private final static int SCREEN_MODE = 0;
 	
 	/**
 	 * @param args
@@ -33,14 +33,14 @@ public class MSXTestSetCursor {
 		char c = '0';
 		
 		MSX.screen(SCREEN_MODE);
-		MSX.width((byte)MAX_COL);
-		MSX.color((byte) 15, (byte) 5, (byte) 5);
+		MSX.width(MAX_COL);
+		MSX.color(15,5,5);
 		MSX.setCursor(MAX_COL, MAX_LIN);
 		MSX.putChar('*');
 
 		for (int i = 1; i <= MAX_COL; i++) 
 		{
-			MSX.setCursor((byte)i, (byte)2);
+			MSX.setCursor(i,2);
 			MSX.putChar(c++);
 			
 			if (c > '9') {c = '0';} 
@@ -49,14 +49,14 @@ public class MSXTestSetCursor {
 		c = '0';
 		for (int i = 1; i <= MAX_COL; i+=10) 
 		{
-			MSX.setCursor((byte)i, (byte)1);
+			MSX.setCursor(i,1);
 			MSX.putChar(c++);
 		}
 
 		c = '0';
 		for (int i = 1; i <= MAX_LIN; i++) 
 		{
-			MSX.setCursor((byte)2, (byte)i);
+			MSX.setCursor(2, i);
 			MSX.putChar(c++);
 			
 			if (c > '9') {c = '0';} 
@@ -65,16 +65,16 @@ public class MSXTestSetCursor {
 		c = '0';
 		for (int i = 1; i <= MAX_LIN; i+=10) 
 		{
-			MSX.setCursor((byte)1, (byte)i);
+			MSX.setCursor(1, i);
 			MSX.putChar(c++);
 		}
 		
 		c = 'X';
 		
-		byte lin = 3;
+		int lin = 3;
 		for (int i = 1; i < 21; i++) 
 		{
-			MSX.setCursor((byte)i, lin++);
+			MSX.setCursor(i, lin++);
 			MSX.putChar(c);
 		}
 
@@ -82,7 +82,7 @@ public class MSXTestSetCursor {
 		
 		for (int i = 21; i <= MAX_COL; i++) 
 		{
-			MSX.setCursor((byte)i, lin--);
+			MSX.setCursor(i, lin--);
 			MSX.putChar(c);
 		}
 

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+PROGRAM=${1}
+javac -classpath ../../build/JavaGrinder.jar:. ${PROGRAM}.java
+if [ $? -eq 0 ]; then
+   ../../java_grinder ${PROGRAM}.class ${PROGRAM}.asm msx
+   naken_asm -b -l -I ../../include -o /tmp/${PROGRAM}.bin ${PROGRAM}.asm
+   if [ ! -f /tmp/pad ]; then
+     dd if=/dev/zero of=/tmp/pad bs=32768 count=1
+   fi
+   cat /tmp/${PROGRAM}.bin /tmp/pad | head --bytes=32768 > ${PROGRAM}.rom
+else
+   echo "*** ERROR ***"
+fi
+

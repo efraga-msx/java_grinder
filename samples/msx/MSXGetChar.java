@@ -21,9 +21,7 @@ public class MSXGetChar {
   public static void main(String args[]) {
     while (true) {
         int c;
-
         c = MSX.getChar();
-        
         MSX.putChar((char)c);
     }
   }
